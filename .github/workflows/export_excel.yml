@@ -1,0 +1,33 @@
+name: Export MF Data to Excel (Manual)
+
+on:
+  workflow_dispatch:   # manual trigger only
+
+jobs:
+  export-excel:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Export Excel from latest release
+        env:
+          OWNER: ${{ github.repository_owner }}
+          REPO: mf-data-pipeline   # change if repo name changes
+        run: python scripts/export_excel.py
+
+      - name: Upload Excel file
+        uses: actions/upload-artifact@v4
+        with:
+          name: mf-excel-report
+          path: mf_data.xlsx
